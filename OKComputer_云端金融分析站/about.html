@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于平台 - 金融投资分析平台</title>
+    
+    <!-- 核心库引入 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-bg: #0B1426;
+            --accent-gold: #FFB800;
+            --success-green: #00D4AA;
+            --danger-red: #FF4757;
+            --neutral-gray: #8B9DC3;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, #0B1426 0%, #1a2332 50%, #0B1426 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-gold);
+        }
+        
+        .nav-blur {
+            backdrop-filter: blur(20px);
+            background: rgba(11, 20, 38, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-gold), #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent-gold), #FFD700);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1.25rem;
+            width: 2px;
+            height: calc(100% + 1rem);
+            background: rgba(255, 184, 0, 0.3);
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        
+        .tech-stack-item {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .tech-stack-item:hover {
+            background: rgba(255, 184, 0, 0.2);
+            border-color: var(--accent-gold);
+        }
+        
+        .faq-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 0;
+        }
+        
+        .faq-question {
+            cursor: pointer;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .faq-question:hover {
+            color: var(--accent-gold);
+        }
+        
+        .faq-answer {
+            margin-top: 1rem;
+            color: var(--neutral-gray);
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+        
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-display font-bold gradient-text">FinancePro</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="index.html" class="text-gray-300 hover:text-yellow-400 px-3 py-2 text-sm font-medium transition-colors">实时数据</a>
+                        <a href="analysis.html" class="text-gray-300 hover:text-yellow-400 px-3 py-2 text-sm font-medium transition-colors">市场分析</a>
+                        <a href="portfolio.html" class="text-gray-300 hover:text-yellow-400 px-3 py-2 text-sm font-medium transition-colors">投资组合</a>
+                        <a href="about.html" class="text-white hover:text-yellow-400 px-3 py-2 text-sm font-medium transition-colors">关于平台</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面标题区域 -->
+    <section class="hero-bg pt-24 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-display font-bold mb-6 gradient-text">
+                    关于 FinancePro
+                </h1>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    专业的金融投资分析平台，致力于为投资者提供实时、准确、智能的决策支持服务
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 平台介绍 -->
+    <section class="py-16 bg-gradient-to-b from-gray-900 to-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-display font-bold mb-4 gradient-text">平台特色</h2>
+                <p class="text-lg text-gray-300">结合先进的金融科技与专业的投资分析，为您打造全方位的投资决策支持系统</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 实时数据监控 -->
+                <div class="glass-card p-8 text-center">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">实时数据监控</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        提供全球主要金融市场的实时数据，包括股票、ETF、外汇等多种资产类别，确保您随时掌握市场动态。
+                    </p>
+                </div>
+
+                <!-- 智能分析引擎 -->
+                <div class="glass-card p-8 text-center">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">智能分析引擎</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        基于机器学习和量化分析技术，为您提供个性化的投资建议和风险评估，助您做出更明智的投资决策。
+                    </p>
+                </div>
+
+                <!-- 投资组合管理 -->
+                <div class="glass-card p-8 text-center">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">投资组合管理</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        全面的投资组合管理工具，支持资产配置优化、风险监控和表现分析，帮助您构建均衡的投资组合。
+                    </p>
+                </div>
+
+                <!-- 多市场覆盖 -->
+                <div class="glass-card p-8 text-center">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">多市场覆盖</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        覆盖美股、港股、国内股市、外汇等多个市场，为您提供全球化的投资视野和跨市场分析。
+                    </p>
+                </div>
+
+                <!-- 专业图表分析 -->
+                <div class="glass-card p-8 text-center">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">专业图表分析</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        提供丰富的技术分析工具和专业的图表展示，支持多种技术指标和自定义分析，满足专业投资者的需求。
+                    </p>
+                </div>
+
+                <!-- 移动端优化 -->
+                <div class="glass-card p-8 text-center">
+                    <div class="feature-icon">
+                        <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">移动端优化</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        完全响应式设计，支持各种设备访问，让您随时随地都能监控投资组合和市场动态。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技术架构 -->
+    <section class="py-16 bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-display font-bold mb-4 gradient-text">技术架构</h2>
+                <p class="text-lg text-gray-300">采用现代化的技术栈，确保平台的稳定性、性能和可扩展性</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- 前端技术 -->
+                <div class="glass-card p-8">
+                    <h3 class="text-xl font-semibold mb-6">前端技术栈</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-medium mb-2 text-yellow-400">核心框架</h4>
+                            <div class="flex flex-wrap">
+                                <span class="tech-stack-item">HTML5</span>
+                                <span class="tech-stack-item">CSS3</span>
+                                <span class="tech-stack-item">JavaScript ES6+</span>
+                                <span class="tech-stack-item">Tailwind CSS</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium mb-2 text-yellow-400">可视化库</h4>
+                            <div class="flex flex-wrap">
+                                <span class="tech-stack-item">ECharts.js</span>
+                                <span class="tech-stack-item">p5.js</span>
+                                <span class="tech-stack-item">PIXI.js</span>
+                                <span class="tech-stack-item">Shader-park</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium mb-2 text-yellow-400">动画效果</h4>
+                            <div class="flex flex-wrap">
+                                <span class="tech-stack-item">Anime.js</span>
+                                <span class="tech-stack-item">Matter.js</span>
+                                <span class="tech-stack-item">Splide.js</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium mb-2 text-yellow-400">字体与样式</h4>
+                            <div class="flex flex-wrap">
+                                <span class="tech-stack-item">Google Fonts</span>
+                                <span class="tech-stack-item">Playfair Display</span>
+                                <span class="tech-stack-item">Inter</span>
+                                <span class="tech-stack-item">JetBrains Mono</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 后端与数据源 -->
+                <div class="glass-card p-8">
+                    <h3 class="text-xl font-semibold mb-6">数据源与API</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-medium mb-2 text-blue-400">金融数据源</h4>
+                            <div class="flex flex-wrap">
+                                <span class="tech-stack-item">Yahoo Finance API</span>
+                                <span class="tech-stack-item">Alpha Vantage</span>
+                                <span class="tech-stack-item">IEX Cloud</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium mb-2 text-blue-400">数据类型</h4>
+                            <div class="flex flex-wrap">
+                                <span class="tech-stack-item">实时股价</span>
+                                <span class="tech-stack-item">历史数据</span>
+                                <span class="tech-stack-item">技术指标</span>
+                                <span class="tech-stack-item">财务报表</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium mb-2 text-blue-400">更新频率</h4>
+                            <div class="flex flex-wrap">
+                                <span class="tech-stack-item">实时更新</span>
+                                <span class="tech-stack-item">分钟级</span>
+                                <span class="tech-stack-item">日级</span>
+                                <span class="tech-stack-item">周级</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium mb-2 text-blue-400">部署平台</h4>
+                            <div class="flex flex-wrap">
+                                <span class="tech-stack-item">Cloudflare Pages</span>
+                                <span class="tech-stack-item">CDN加速</span>
+                                <span class="tech-stack-item">HTTPS安全</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 使用指南 -->
+    <section class="py-16 bg-gradient-to-b from-gray-800 to-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-display font-bold mb-4 gradient-text">使用指南</h2>
+                <p class="text-lg text-gray-300">快速了解如何使用FinancePro平台的各项功能</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 快速入门 -->
+                <div class="glass-card p-8">
+                    <h3 class="text-xl font-semibold mb-6">快速入门</h3>
+                    <div class="space-y-4">
+                        <div class="timeline-item">
+                            <h4 class="font-semibold mb-2">1. 访问实时数据页面</h4>
+                            <p class="text-gray-300 text-sm">查看全球主要金融市场的实时数据，包括美元指数、主要ETF和股票指数。</p>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <h4 class="font-semibold mb-2">2. 进行风险评估</h4>
+                            <p class="text-gray-300 text-sm">在市场分析页面完成风险评估问卷，获得个性化的投资建议。</p>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <h4 class="font-semibold mb-2">3. 构建投资组合</h4>
+                            <p class="text-gray-300 text-sm">在投资组合页面添加您的持仓，实时监控投资表现。</p>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <h4 class="font-semibold mb-2">4. 优化资产配置</h4>
+                            <p class="text-gray-300 text-sm">使用平台的优化建议，调整您的资产配置以获得更好的风险收益比。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 高级功能 -->
+                <div class="glass-card p-8">
+                    <h3 class="text-xl font-semibold mb-6">高级功能</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="font-semibold mb-1">技术指标分析</h4>
+                                <p class="text-gray-300 text-sm">使用RSI、MACD、布林带等多种技术指标进行深入分析。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="font-semibold mb-1">多时间框架</h4>
+                                <p class="text-gray-300 text-sm">支持1分钟到1年的多时间框架分析，适用于不同投资策略。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="font-semibold mb-1">组合回测</h4>
+                                <p class="text-gray-300 text-sm">对投资策略进行历史回测，评估策略的有效性和风险特征。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="font-semibold mb-1">风险监控</h4>
+                                <p class="text-gray-300 text-sm">实时监控投资组合风险，提供预警和风险管理建议。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                            <div>
+                                <h4 class="font-semibold mb-1">数据导出</h4>
+                                <p class="text-gray-300 text-sm">支持将分析结果和投资建议导出为PDF报告，便于保存和分享。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 常见问题 -->
+    <section class="py-16 bg-gray-900">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-display font-bold mb-4 gradient-text">常见问题</h2>
+                <p class="text-lg text-gray-300">解答用户在使用过程中遇到的常见问题</p>
+            </div>
+
+            <div class="glass-card p-8">
+                <div class="space-y-0">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>平台的数据来源是什么？数据准确性如何？</span>
+                            <svg class="w-5 h-5 faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            我们的数据主要来自Yahoo Finance、Alpha Vantage等权威金融数据提供商。所有数据都经过严格验证，确保准确性和及时性。实时数据通常延迟不超过15分钟，满足个人投资分析需求。
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>使用平台是否需要付费？</span>
+                            <svg class="w-5 h-5 faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            FinancePro目前提供免费版本，包含大部分核心功能。未来可能会推出高级版本，提供更多专业功能和更深度的分析服务。免费版本将始终保持核心功能的可用性。
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>平台的投资建议可靠吗？</span>
+                            <svg class="w-5 h-5 faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            我们的投资建议基于历史数据和量化模型分析，仅供参考。投资决策应结合您的个人情况、风险承受能力和投资目标。我们建议您将平台建议作为决策参考，而不是唯一依据。
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>如何保护我的个人数据和投资信息？</span>
+                            <svg class="w-5 h-5 faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            我们高度重视用户数据安全。所有数据传输都使用HTTPS加密，敏感信息经过加密存储。我们不会收集或存储您的真实账户信息，投资组合数据仅用于展示和分析目的。
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>平台支持哪些市场和资产类型？</span>
+                            <svg class="w-5 h-5 faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            目前平台支持美股市场（NYSE、NASDAQ）、港股市场、国内股市（沪深）、外汇市场以及主要ETF产品。我们正在不断扩展支持的市场和资产类型，敬请期待更多更新。
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            <span>如何联系客服获得技术支持？</span>
+                            <svg class="w-5 h-5 faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="faq-answer">
+                            您可以通过平台内的反馈功能提交问题，或发送邮件至support@financepro.com。我们的技术团队会在24小时内回复您的问题。对于紧急问题，建议在工作时间内联系我们。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 免责声明 -->
+    <section class="py-12 bg-gray-800">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-card p-8">
+                <h3 class="text-xl font-semibold mb-6 text-center gradient-text">免责声明</h3>
+                <div class="text-sm text-gray-300 leading-relaxed space-y-4">
+                    <p>
+                        <strong>投资风险提示：</strong>本平台提供的所有信息、数据、分析和建议仅供参考，不构成任何投资建议。投资有风险，入市需谨慎。过往表现不代表未来结果，投资者应根据自身情况做出独立的投资决策。
+                    </p>
+                    <p>
+                        <strong>数据准确性：</strong>虽然我们努力确保数据的准确性和及时性，但无法保证所有数据的完全准确。建议您在进行投资决策前，通过多个渠道验证相关信息。
+                    </p>
+                    <p>
+                        <strong>平台责任：</strong>本平台不对因使用本平台信息而导致的任何直接或间接损失承担责任。用户应自行承担投资风险，并在必要时咨询专业的投资顾问。
+                    </p>
+                    <p>
+                        <strong>服务条款：</strong>使用本平台即表示您同意我们的服务条款和隐私政策。我们保留随时修改平台功能和服务的权利，恕不另行通知。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-display font-bold gradient-text mb-4">FinancePro</h3>
+                <p class="text-gray-400 mb-6">专业的金融投资分析平台，为您的投资决策提供数据支持</p>
+                <div class="text-sm text-gray-500">
+                    © 2024 FinancePro. 保留所有权利。投资有风险，决策需谨慎。
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="main.js"></script>
+    <script>
+        // 关于页面特定的JavaScript代码
+        
+        // 切换FAQ显示
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // 关闭所有其他FAQ
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 切换当前FAQ
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加滚动动画效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // 观察需要动画的元素
+            const animatedElements = document.querySelectorAll('.glass-card, .timeline-item');
+            animatedElements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
